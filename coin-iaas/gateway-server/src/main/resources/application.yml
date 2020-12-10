@@ -6,7 +6,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 39.99.162.169:8849 # 修改本机的host文件
+        server-addr: 39.99.162.169:8849 # 可以修改本机的host文件
     gateway:
       discovery:
         locator:
@@ -18,6 +18,27 @@ spring:
           predicates:
             - Path=/admin/**
         - id: test_router
-          uri: http://www.baidu.com/
+          uri: http://www.aliyun.com
           predicates:
-            - Path=/test
+            - Path=/product
+    sentinel:
+      filter:
+        enabled: true
+      transport:
+#        dashboard: 39.99.162.169:8858
+        dashboard: localhost:8858
+      datasource:
+#        ds1.file:
+#          file: classpath:gw-flow.json # 网关+API分组的限流
+#          ruleType: gw-flow
+        ds1.nacos:
+          serverAddr: 39.99.162.169:8849
+          dataId: gw-flow
+          ruleType: gw_flow
+#        ds2.file:
+#          file: classpath:api-group.json #api-flow.json 接口的分组
+#          ruleType: gw_api_group
+        ds.nacos:
+          serverAddr: 39.99.162.169:8849
+          dataId: api-group
+          ruleType: gw_api_group
