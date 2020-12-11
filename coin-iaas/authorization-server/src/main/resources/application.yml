@@ -1,0 +1,18 @@
+server:
+  port: 9999
+spring:
+  application:
+    name: authorization-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 39.99.162.169:8849 # 可以修改本机的host文件
+  datasource:
+    url: jdbc:mysql://39.99.162.169:3307/coin-exchange?useSSL=false&serverTimezon=GMT%28
+    username: root
+    password: liwenbo
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#  redis:
+#    host: redis-server
+#    port: 6380
+#    password: liwenbo
