@@ -19,6 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +49,10 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
         }
         UserDetails userDetails = null;
         try {
+            String grant_type = requestAttributes.getRequest().getParameter("grant_type");
+            if (LoginConstant.REFRESH_TOKEN.equals(grant_type.toUpperCase())) {
+                username = adjustUsername(username, loginType);
+            }
             switch (loginType) {
                 case LoginConstant.ADMIN_TYPE: // 管理员登录
                     userDetails = loadAdminUserByUsername(username);
@@ -66,13 +71,49 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
     }
 
     /**
+     * 纠正用户的名称
+     *
+     * @param username  用户的id -> username
+     * @param loginType admin_type memeber_type
+     * @return
+     */
+    private String adjustUsername(String username, String loginType) {
+        if (LoginConstant.ADMIN_TYPE.equals(loginType)) {
+            return jdbcTemplate.queryForObject(LoginConstant.QUERY_ADMIN_USER_WITH_ID, String.class, username);
+        }
+        if (LoginConstant.MEMBER_TYPE.equals(loginType)) {
+            return jdbcTemplate.queryForObject(LoginConstant.QUERY_MEMBER_USER_WITH_ID, String.class, username);
+        }
+        return username;
+    }
+
+    /**
      * 普通用户登录
      *
      * @param username
      * @return
      */
     private UserDetails loadMemberUserByUsername(String username) {
-        return null;
+        return jdbcTemplate.queryForObject(QUERY_MEMBER_SQL, new RowMapper<UserDetails>() {
+            @Override
+            public UserDetails mapRow(ResultSet rs, int rowNum) throws SQLException {
+                if (rs.wasNull()) {
+                    throw new UsernameNotFoundException("会员：" + username + "不存在");
+                }
+                long id = rs.getLong("id"); // 获取用户的id
+                String password = rs.getString("password");
+                int status = rs.getInt("status");
+                return new User(
+                        String.valueOf(id),
+                        password,
+                        status == 1,
+                        true,
+                        true,
+                        true,
+                        Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))
+                );
+            }
+        }, username, username);
     }
 
     /**
