@@ -1,0 +1,60 @@
+server:
+  port: 18080
+spring:
+  application:
+    name: coin-common
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://39.99.162.169:3307/coin-exchange
+    username: root
+    password: liwenbo
+  redis:
+    host: 39.99.162.169
+    port: 6380
+    password: liwenbo
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 39.99.162.169:8849
+      config:
+        enabled: false
+        file-extension: yaml
+    sentinel:
+      transport:
+        dashboard: 39.99.162.169:8858
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:/mapper/*Mapper.xml
+jetcache:
+  statIntervalMinutes: 15
+  areaInCacheName: false
+  local: # 本地缓存实现
+    default:
+      type: linkedhashmap
+      keyConvertor: fastjson
+  remote: # 远程缓存
+    default:
+      type: redis
+      keyConvertor: fastjson
+      valueEncoder: kryo
+      valueDecoder: kryo
+      poolConfig:
+        minIdle: 5
+        maxIdle: 20
+        maxTotal: 50
+      host: ${spring.redis.host}
+      port: ${spring.redis.port}
+      password:  ${spring.redis.password}
+swagger2:
+  basePackage: com.li.controller
+  name: lwb
+  url: https://baidu.com/
+  email: liwenbo4922@qq.com
+  title: Coin-common模型的测试
+  description: Coin-Common模块测试开放
+  version: 2.0
+  termsOFServiceUrl: www.baidu.com
