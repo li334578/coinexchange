@@ -66,7 +66,7 @@ public class JwtCheckFilter implements GlobalFilter, Ordered {
     }
 
     /**
-     * 给用户响应一个没有哦token的错误
+     * 给用户响应一个没有token的错误
      *
      * @param exchange
      * @return
