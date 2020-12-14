@@ -90,4 +90,11 @@ public class SysPrivilege {
     @TableField(value = "last_update_time", fill = FieldFill.INSERT_UPDATE)
     @ApiModelProperty(value = "修改时间")
     private Date lastUpdateTime;
+
+    /**
+     * 在使用角色查询权限时,我们也会使用该字段来标记当前的角色使用有该权限,有权限为1,否则为0
+     */
+    @TableField(exist = false)
+    @ApiModelProperty(value="当前角色是否拥有这个权限")
+    private int own ;
 }
